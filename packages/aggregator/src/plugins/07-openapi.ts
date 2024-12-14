@@ -22,7 +22,7 @@ export default fp(async function (fastify: FastifyInstance) {
   await fastify.register(fastifySwagger, {
     openapi: {
       info: {
-        title: "Workshop App",
+        title: "Aggregator API",
         version: "1.0.0",
       },
     },

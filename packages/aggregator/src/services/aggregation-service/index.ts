@@ -32,7 +32,12 @@ export const AggregationService = {
 
     const aggregation = await OpenAIService.getCompletion(
       AGGREGATION_SYSTEM_PROMPT,
-      AGGREGATION_USER_PROMPT + answers.join("\n"),
+      AGGREGATION_USER_PROMPT +
+        answers
+          .map((answer) =>
+            typeof answer === "string" ? answer : JSON.stringify(answer)
+          )
+          .join("\n"),
       AGGREGATION_MODEL
     );
 
