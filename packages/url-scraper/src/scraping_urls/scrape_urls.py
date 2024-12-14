@@ -58,7 +58,10 @@ def scrape_urls(base_url: str, max_urls: int = 1000):
 
     _write_to_csv(url_text_pairs, f"links_{len(url_text_pairs)}.csv")
 
-    driver.quit()
+    try:
+        driver.quit()
+    except Exception as e:
+        print(f"    Error quitting driver: {e}")
 
     return url_text_pairs
 

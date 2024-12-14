@@ -3,11 +3,34 @@ from src.scraping_urls.scrape_urls import scrape_urls
 import os
 import json
 
-base_url = "https://www.gov.uk/"
+# base_url = "https://www.gov.uk/"
+base_url = "https://vlada.gov.hr/"
 
-url_text_pairs = scrape_urls(base_url, max_urls=20000)
+data_dir = f"data/{base_url.replace('https://', '').replace('.', '_')}"
+os.makedirs(data_dir, exist_ok=True)
+url_text_pairs = scrape_urls(base_url, max_urls=10000)
 
-filtered_url_text_pairs = [(url, text) for url, text in url_text_pairs if "tax" in url]
+keywords = [
+    "tax",
+    "corporation",
+    "association",
+    "unincorporated",
+    "porez",
+    "dohodak",
+    "zakon",
+    "pravilnik",
+    "tvrtka",
+]
+filtered_url_text_pairs = [
+    (url, text)
+    for url, text in url_text_pairs
+    if any(keyword in url for keyword in keywords)
+    or any(keyword in text for keyword in keywords)
+]
+
+if not filtered_url_text_pairs or len(filtered_url_text_pairs) == 0:
+    print("No urls found")
+    exit()
 
 for url, text in filtered_url_text_pairs:
     if base_url not in url:
@@ -21,7 +44,7 @@ for url, text in filtered_url_text_pairs:
     sanitized_url = url.replace(base_url, "").replace("/", "_")
 
     # Create the directory for each URL
-    dir_path = f"data/{sanitized_url}"
+    dir_path = os.path.join(data_dir, sanitized_url)
     os.makedirs(dir_path, exist_ok=True)
 
     # Save the full text in a file
