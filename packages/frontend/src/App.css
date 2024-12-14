@@ -87,10 +87,18 @@ button, .button {
   font-size: var(--font-size-200);
   cursor: pointer;
   border: none;
+
+  transition: 0.3s;
 }
 
 .secondary-button {
   color: var(--secondary-text-color);
   background-color: transparent;
   border: none;
+}
+
+button:hover, .button:hover {
+  filter: brightness(1.2);
+
+  box-shadow: var(--raised-shadow);
 }

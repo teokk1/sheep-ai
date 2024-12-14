@@ -7,15 +7,18 @@ import "./map.css";
 
 import lookup from "country-code-lookup";
 
-export const upcomingTaxChangeDates = [
-  { country: "de", date: Date.parse("2025-01-01") },
-  { country: "gb", date: Date.parse("2026-06-01") },
-  { country: "hr", date: Date.parse("2030-04-04") },
-  { country: "at", date: Date.parse("2028-01-01") }
-];
+import remarkGfm from "remark-gfm";
 
-const minValue = new Date();
-const maxValue = Math.max(...Object.values(upcomingTaxChangeDates));
+import ReactMarkdown from "react-markdown";
+
+import { getCountryUpdates, getChatResponse } from "../../api";
+
+export const upcomingTaxChangeDates = [
+  { name: "Germany", country: "de", date: Date.parse("2025-01-01") },
+  { name: "United Kingdom", country: "gb", date: Date.parse("2026-06-01") },
+  { name: "Croatia", country: "hr", date: Date.parse("2030-04-04") },
+  { name: "Austria", country: "at", date: Date.parse("2028-01-01") }
+];
 
 const justColor = "#F43F5E";
 
@@ -48,9 +51,44 @@ function distanceToToday(date) {
 export function DateMap() {
   const [selectedCountry, setSelectedCountry] = useState("");
 
+  const [countryUpdates, setCountryUpdates] = useState([]);
+
   React.useEffect(() => {
-    console.log(selectedCountry);
+    async function fetchData() {
+      if (!selectedCountry) {
+        return;
+      }
+
+      const response = await getCountryUpdates(selectedCountry?.countryCode);
+
+      console.log(response);
+      const data = await response.json();
+
+      console.log(data);
+      setCountryUpdates(data);
+    }
+
+    fetchData();
   }, [selectedCountry]);
+
+  const [loading, setLoading] = useState(false);
+
+  const [chatResponse, setChatResponse] = useState("");
+
+  const sendChatQuery = async (query) => {
+    console.log("Sending query");
+    setLoading(true);
+
+    const response = await getChatResponse(selectedCountry?.countryCode, query);
+
+    console.log(response);
+    const data = await response.json();
+
+    console.log(data);
+    setChatResponse(data?.markdown);
+
+    setLoading(false);
+  };
 
   return (
     <>
@@ -86,17 +124,17 @@ export function DateMap() {
                   day: "numeric"
                 })}
               </p>
-              <p>Expected changes: </p>
-              <p>The UK parliament is discussing the following changes:</p>
-              <ul>
-                <li>Reducing the tax burden on the self-employed</li>
-                <li>Reducing the tax burden on small businesses</li>
-                <li>Reducing the tax burden on businesses with employees</li>
-                <li>
-                  Increasing the tax burden on businesses with fewer than 10
-                  employees
-                </li>
-              </ul>
+              {countryUpdates?.length ? (
+                <div className="updates">
+                  {countryUpdates?.map((update) => (
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                      {update?.markdown}
+                    </ReactMarkdown>
+                  ))}
+                </div>
+              ) : (
+                <div className="spinner" />
+              )}
               <button className="button" onClick={() => {}}>
                 Details
               </button>
@@ -106,42 +144,62 @@ export function DateMap() {
       </div>
 
       <div className="table-wrapper">
-        <table className="table">
-          <thead>
-            <tr>
-              <th>Country</th>
-              <th>Expected Date of proposed changes</th>
-              <th>Expected changes</th>
-            </tr>
-          </thead>
-          <tbody>
+        <div className="grid">
+          <div className="grid-header">
+            <div className="grid-header-title">Country</div>
+            <div className="grid-header-subtitle">
+              Expected Date of proposed changes
+            </div>
+          </div>
+          <div className="grid-body">
             {upcomingTaxChangeDates.map((d) => (
-              <tr>
-                <td>{d.country}</td>
-                <td>
+              <div className="grid-item" key={d.country}>
+                <div className="grid-item-title">{d.name}</div>
+                <div className="grid-item-subtitle">
                   {new Date(d.date).toLocaleDateString("en-US", {
                     year: "numeric",
                     month: "long",
                     day: "numeric"
                   })}
-                </td>
-                <td>
-                  <ul>
-                    <li>Reducing the tax burden on the self-employed</li>
-                    <li>Reducing the tax burden on small businesses</li>
-                    <li>
-                      Reducing the tax burden on businesses with employees
-                    </li>
-                    <li>
-                      Increasing the tax burden on businesses with fewer than 10
-                      employees
-                    </li>
-                  </ul>
-                </td>
-              </tr>
+                </div>
+              </div>
             ))}
-          </tbody>
-        </table>
+          </div>
+        </div>
+      </div>
+
+      <div className="chat-wrapper">
+        <h2>
+          Ask anything about the tax rules in {selectedCountry?.countryName}
+        </h2>
+
+        <form onSubmit={(e) => e.preventDefault()}>
+          <textarea placeholder="Chat query" id="query" />
+
+          <button
+            className="button"
+            onClick={() =>
+              sendChatQuery(document.querySelector("#query").value)
+            }
+            style={{ width: "fit-content" }}
+          >
+            Ask AI
+          </button>
+        </form>
+
+        <div className="divider" />
+
+        <div className="chat-response" style={{ paddingBottom: 100 }}>
+          <div className="chat-response-body">
+            {loading ? (
+              <div className="spinner" />
+            ) : (
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                {chatResponse?.markdown}
+              </ReactMarkdown>
+            )}
+          </div>
+        </div>
       </div>
     </>
   );

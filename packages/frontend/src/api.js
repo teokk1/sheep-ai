@@ -16,6 +16,26 @@ export async function getTaxMarkdown(country, year) {
 // }
 // Post
 
+function remapCode(code) {
+  if (code == "gb" || code == "GB") {
+    return "UK";
+  }
+
+  return code;
+}
+
+export async function getCountryUpdates(countryCode) {
+  return fetch("http://localhost:8080/updates", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      country_code: remapCode(countryCode)
+    })
+  });
+}
+
 export async function getCountryInfo(countryCode) {
   return fetch("http://localhost:8080/countries", {
     method: "POST",
@@ -23,7 +43,20 @@ export async function getCountryInfo(countryCode) {
       "Content-Type": "application/json"
     },
     body: JSON.stringify({
-      country_code: countryCode
+      country_code: remapCode(countryCode)
+    })
+  });
+}
+
+export async function getChatResponse(country_code, query) {
+  return fetch("http://localhost:8080/assistants/message", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      country_code: remapCode(country_code),
+      message: query
     })
   });
 }

@@ -1,0 +1,194 @@
+* {
+  box-sizing: border-box;
+}
+
+html {
+  overflow-y: scroll;
+}
+
+.markdown-body {
+  padding: var(--padding-300) var(--padding-800);
+  max-width: min(90%, 1000px);
+  margin: 0 auto;
+}
+
+.markdown-body h1,
+.markdown-body h2,
+.markdown-body h3,
+.markdown-body h4 {
+  margin: 2.5rem 0 1.5rem 0;
+  line-height: 1.25;
+  color: #333;
+}
+
+.markdown-body a {
+  text-decoration: none;
+}
+.markdown-body a:hover,
+.markdown-body a:focus,
+.markdown-body a:active {
+  text-decoration: underline;
+}
+
+.markdown-body p {
+  margin: 1em 0;
+  line-height: 1.5;
+}
+.markdown-body p code {
+  background-color: #eee;
+  padding: 0.05em 0.2em;
+  border: 1px solid #ccc;
+}
+
+.markdown-body ol,
+ul {
+  margin: 1em;
+}
+.markdown-body ol li ol,
+.markdown-body ol li ul,
+.markdown-body ul li ol,
+.markdown-body ul li ul {
+  margin: 0 2em;
+}
+.markdown-body ol li p,
+.markdown-body ul li p {
+  margin: 0;
+}
+
+.markdown-body dl {
+  font-family: monospace, monospace;
+}
+.markdown-body dl dt {
+  font-weight: bold;
+}
+.markdown-body dl dd {
+  margin: -1em 0 1em 1em;
+}
+
+.markdown-body img {
+  max-width: 100%;
+  display: block;
+  margin: 0 auto;
+  padding: 0.5em;
+}
+
+.markdown-body blockquote {
+  padding-left: 1em;
+  font-style: italic;
+}
+
+.markdown-body table {
+  font-size: 1rem;
+  text-align: left;
+  caption-side: bottom;
+  margin-bottom: 2em;
+}
+.markdown-body table * {
+  border: none;
+}
+.markdown-body table thead,
+.markdown-body table tr {
+  display: table;
+  table-layout: fixed;
+  width: 100%;
+}
+.markdown-body table tr:nth-child(even) {
+  background-color: rgba(200, 200, 200, 0.2);
+}
+.markdown-body table tbody {
+  display: block;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+.markdown-body table td,
+.markdown-body table th {
+  padding: 0.25em;
+}
+
+.markdown-body table,
+.markdown-body .highlight > pre,
+.markdown-body pre.example {
+  max-height: 70vh;
+  margin: 1em 0;
+  padding: 1em;
+  overflow: auto;
+  font-size: 0.85rem;
+  font-family: monospace, monospace;
+  border: var(--default-border);
+  border-radius: var(--border-radius-100);
+}
+
+.markdown-body .title {
+  font-size: 2.5em;
+}
+
+.markdown-body .subtitle {
+  font-weight: normal;
+  font-size: 0.75em;
+  color: #666;
+}
+
+.markdown-body .tags {
+  margin-top: -1.5rem;
+  padding-bottom: 1.5em;
+}
+.markdown-body .tags li {
+  display: inline;
+  margin-right: 0.5em;
+}
+
+.markdown-body figure {
+  margin: 1em 0;
+}
+.markdown-body figure figcaption {
+  font-family: monospace, monospace;
+  font-size: 0.75em;
+  text-align: center;
+  color: grey;
+}
+
+.markdown-body .footnote-definition sup {
+  margin-left: -1.5em;
+  float: left;
+}
+
+.markdown-body .footnote-definition .footnote-body {
+  margin: 1em 0;
+  padding: 0 1em;
+  border: var(--default-border);
+  background-color: rgba(200, 200, 200, 0.2);
+  border-radius: var(--border-radius-100);
+}
+.markdown-body .footnote-definition .footnote-body p:only-child {
+  margin: 0.2em 0;
+}
+
+.posts {
+  margin: 0;
+  list-style: none;
+}
+.posts .post a {
+  display: flex;
+  padding: 0.5em 0;
+  color: black;
+}
+.posts .post a:hover,
+.posts .post a:focus,
+.posts .post a:active {
+  text-decoration: none;
+  background: rgba(200, 200, 200, 0.2);
+}
+.posts .post date {
+  font-family: monospace, monospace;
+  font-size: 0.8rem;
+  vertical-align: middle;
+  padding-right: 2rem;
+  color: grey;
+}
+
+
+.spinner{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

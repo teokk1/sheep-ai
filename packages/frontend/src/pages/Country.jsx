@@ -3,7 +3,11 @@ import { getCountryInfo } from "../api";
 
 import ReactMarkdown from "react-markdown";
 
-export function Country({}) {
+import remarkGfm from "remark-gfm";
+
+import "./markdown.css";
+
+export function Country() {
   const [markdown, setMarkdown] = React.useState("");
 
   React.useEffect(() => {
@@ -27,8 +31,13 @@ export function Country({}) {
   return (
     <div className="page">
       <h1>Country Tax Information</h1>
-
-      <ReactMarkdown>{markdown}</ReactMarkdown>
+      <div className="markdown-body">
+        {markdown ? (
+          <ReactMarkdown remarkPlugins={[remarkGfm]}>{markdown}</ReactMarkdown>
+        ) : (
+          <p>Navigating all the complex tax rules for you...</p>
+        )}
+      </div>
     </div>
   );
 }
