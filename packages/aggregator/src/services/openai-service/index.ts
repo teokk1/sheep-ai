@@ -140,31 +140,63 @@ export const OpenAIService = {
   },
 
   createThreadAndRun: async (assistantId: string, prompt: string) => {
-    const run = await openai.beta.threads.createAndRun({
-      assistant_id: assistantId,
-      thread: {
-        messages: [{ role: "user", content: prompt }],
-      },
-    });
+    try {
+      const assistant = await openai.beta.assistants.retrieve(assistantId);
+      console.log("Assistant details:", JSON.stringify(assistant, null, 2));
 
-    if (!run) {
-      throw new Error("Failed to create thread and run");
+      const run = await openai.beta.threads.createAndRun({
+        assistant_id: assistantId,
+        thread: {
+          messages: [{ role: "user", content: prompt }],
+        },
+      });
+
+      if (!run) {
+        throw new Error("Failed to create thread and run");
+      }
+
+      let runStatus;
+      const runId = run.id;
+      const threadId = run.thread_id;
+      let attempts = 0;
+      const maxAttempts = 60; // 1 minute timeout
+
+      do {
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        runStatus = await openai.beta.threads.runs.retrieve(threadId, runId);
+        console.log(`Run status: ${runStatus.status}`);
+        attempts++;
+
+        if (attempts >= maxAttempts) {
+          throw new Error("Thread run timed out");
+        }
+
+        // Handle other potential statuses
+        if (
+          runStatus.status === "requires_action" ||
+          runStatus.status === "expired" ||
+          runStatus.status === "cancelled" ||
+          runStatus.status === "failed"
+        ) {
+          console.error(
+            "Run failed with status:",
+            JSON.stringify(runStatus, null, 2)
+          );
+          throw new Error(
+            `Thread run ${runStatus.status}: ${
+              runStatus.last_error?.message || "Unknown error"
+            }`
+          );
+        }
+      } while (runStatus.status !== "completed");
+
+      return run;
+    } catch (error) {
+      console.error("Full error details:", error);
+      console.error("Assistant ID:", assistantId);
+      console.error("Prompt:", prompt);
+      throw error;
     }
-
-    let runStatus;
-    const runId = run.id;
-    const threadId = run.thread_id;
-
-    do {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      runStatus = await openai.beta.threads.runs.retrieve(threadId, runId);
-    } while (runStatus.status !== "completed" && runStatus.status !== "failed");
-
-    if (runStatus.status === "failed") {
-      throw new Error("Thread run failed");
-    }
-
-    return run;
   },
 
   getLastThreadMessage: async (threadId: string) => {
