@@ -7,6 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "NODE_ENV=production tsx src/index.ts",
     "dev": "NODE_ENV=development pnpm run dev:server",
+    "dev:local": "NODE_ENV=development nodemon --exec tsx src/index.ts",
     "dev:server": "op run --env-file=\"./.env.development\" -- nodemon --exec tsx src/index.ts",
     "build": "tsc"
   },
