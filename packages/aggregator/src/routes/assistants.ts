@@ -24,8 +24,13 @@ export type GetAssistantForCountryRequestType = z.infer<
   typeof GetAssistantForCountryRequestSchema
 >;
 
-export type CreateAssistantResponseType = z.infer<
-  typeof CreateAssistantResponseSchema
+export const GetAssistantForCountryResponseSchema = z.object({
+  country_code: z.string(),
+  assistant_id: z.string(),
+});
+
+export type GetAssistantForCountryResponseType = z.infer<
+  typeof GetAssistantForCountryResponseSchema
 >;
 
 export default async function (fastify: FastifyInstance) {
@@ -53,7 +58,7 @@ export default async function (fastify: FastifyInstance) {
     const result = await RetrievalService.getAssistantForCountry(countryCode);
 
     return rep.send(
-      GetAssistantForCountryRequestSchema.parse({
+      GetAssistantForCountryResponseSchema.parse({
         country_code: countryCode,
         assistant_id: result.id,
       })
