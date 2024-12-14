@@ -133,10 +133,45 @@ export const OpenAIService = {
   },
 
   getAssistantCompletion: async (assistantId: string, prompt: string) => {
-    const run = await OpenAIService.createThreadAndRun(assistantId, prompt);
-    const lastMessage = await OpenAIService.getLastThreadMessage(run.thread_id);
+    try {
+      console.log("Getting completion for prompt:", prompt);
+      const run = await OpenAIService.createThreadAndRun(assistantId, prompt);
+      console.log("Run completed, getting messages");
 
-    return lastMessage;
+      // Wait a short moment to ensure messages are available
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      const messages = await openai.beta.threads.messages.list(run.thread_id);
+      console.log("Retrieved messages:", JSON.stringify(messages, null, 2));
+
+      // Get the last assistant message
+      const assistantMessage = messages.data.find(
+        (message) => message.role === "assistant"
+      );
+
+      if (!assistantMessage || !assistantMessage.content) {
+        console.error("No assistant message found");
+        throw new Error("No response from assistant");
+      }
+
+      // Extract text content from the message
+      const textContent = assistantMessage.content
+        .filter((content) => content.type === "text")
+        .map((content) => content.text?.value)
+        .filter(Boolean)
+        .join("\n");
+
+      if (!textContent) {
+        console.error("No text content in assistant message");
+        throw new Error("Empty response from assistant");
+      }
+
+      console.log("Final response:", textContent);
+      return textContent;
+    } catch (error) {
+      console.error("Error in getAssistantCompletion:", error);
+      throw error;
+    }
   },
 
   createThreadAndRun: async (assistantId: string, prompt: string) => {
@@ -144,11 +179,14 @@ export const OpenAIService = {
       const assistant = await openai.beta.assistants.retrieve(assistantId);
       console.log("Assistant details:", JSON.stringify(assistant, null, 2));
 
-      const run = await openai.beta.threads.createAndRun({
+      // Create a thread with the initial message
+      const thread = await openai.beta.threads.create({
+        messages: [{ role: "user", content: prompt }],
+      });
+
+      // Create a run on that thread
+      const run = await openai.beta.threads.runs.create(thread.id, {
         assistant_id: assistantId,
-        thread: {
-          messages: [{ role: "user", content: prompt }],
-        },
       });
 
       if (!run) {
@@ -157,7 +195,7 @@ export const OpenAIService = {
 
       let runStatus;
       const runId = run.id;
-      const threadId = run.thread_id;
+      const threadId = thread.id;
       let attempts = 0;
       const maxAttempts = 60; // 1 minute timeout
 
@@ -171,7 +209,6 @@ export const OpenAIService = {
           throw new Error("Thread run timed out");
         }
 
-        // Handle other potential statuses
         if (
           runStatus.status === "requires_action" ||
           runStatus.status === "expired" ||
@@ -190,7 +227,7 @@ export const OpenAIService = {
         }
       } while (runStatus.status !== "completed");
 
-      return run;
+      return { thread_id: threadId, id: runId };
     } catch (error) {
       console.error("Full error details:", error);
       console.error("Assistant ID:", assistantId);

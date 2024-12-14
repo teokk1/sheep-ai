@@ -33,16 +33,8 @@ export const RetrievalService = {
           question
         );
 
-        if (response.content && Array.isArray(response.content)) {
-          const textContent = response.content
-            .filter((content) => content.type === "text")
-            .map((content) => content.text?.value)
-            .filter(Boolean)
-            .join("\n");
-
-          if (textContent) {
-            return textContent;
-          }
+        if (response) {
+          return response;
         }
 
         console.warn(

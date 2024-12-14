@@ -67,23 +67,9 @@ export default async function (fastify: FastifyInstance) {
       `
     );
 
-    let updatesText = "";
-
-    if (updates.content && Array.isArray(updates.content)) {
-      const textContent = updates.content
-        .filter((content) => content.type === "text")
-        .map((content) => content.text?.value)
-        .filter(Boolean)
-        .join("\n");
-
-      if (textContent) {
-        updatesText = textContent;
-      }
-    }
-
     const parsedUpdates = await OpenAIService.getCompletion(
       PARSING_SYSTEM_PROMPT,
-      updatesText,
+      updates,
       MODEL
     );
 
