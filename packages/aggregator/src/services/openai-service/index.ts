@@ -1,63 +1,202 @@
-import { z } from "zod";
 import { OpenAI } from "openai";
+import dotenv from "dotenv";
+dotenv.config();
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
 
 export const OpenAIService = {
   createVectorStore: async (name: string) => {
-    // Call openai service to create vector store
-    // Named after country code
-    // Return vector store object
+    const vectorStore = await openai.beta.vectorStores.create({
+      name: `${name}`,
+    });
+
+    return vectorStore;
   },
 
   getVectorStoreByName: async (name: string) => {
-    // Call openai service to get vector store
-    // Named after country code
-    // Return vector store object
+    const vectorStores = await openai.beta.vectorStores.list();
+
+    const vectorStore = vectorStores.data.find(
+      (vectorStore) => vectorStore.name === name
+    );
+
+    if (!vectorStore) {
+      throw new Error("Vector store not found");
+    }
+
+    return vectorStore;
   },
 
   getVectorStoreById: async (id: string) => {
-    // Call openai service to get vector store
-    // Return vector store object
+    const vectorStore = await openai.beta.vectorStores.retrieve(id);
+
+    if (!vectorStore) {
+      throw new Error("Vector store not found");
+    }
+
+    return vectorStore;
   },
 
   uploadFile: async (file: File) => {
-    // Upload file to openai
-    // Purpose = assistants
-    // Return file id
+    const uploadedFile = await openai.files.create({
+      file: file,
+      purpose: "assistants",
+    });
+
+    if (!uploadedFile) {
+      throw new Error("Failed to upload file");
+    }
+
+    return uploadedFile;
   },
 
   uploadFileToVectorStore: async (vectorStoreId: string, fileId: string) => {
-    // Upload file to vector store
-    // Return file id
+    const vectorStoreFile = await openai.beta.vectorStores.files.create(
+      vectorStoreId,
+      {
+        file_id: fileId,
+      }
+    );
+
+    if (!vectorStoreFile) {
+      throw new Error("Failed to upload file to vector store");
+    }
+
+    return vectorStoreFile;
   },
 
   uploadFilesToVectorStore: async (
     vectorStoreId: string,
     fileIds: string[]
   ) => {
-    // Upload files to vector store
-    // Return file ids
+    const vectorStoreFileBatch =
+      await openai.beta.vectorStores.fileBatches.create(vectorStoreId, {
+        file_ids: fileIds,
+      });
+
+    if (!vectorStoreFileBatch) {
+      throw new Error("Failed to create vector store file batch");
+    }
+
+    return vectorStoreFileBatch;
   },
 
-  createAssistant: async (name: string) => {
-    // Create assistant
-    // Named after country code
-    // Return assistant object
+  createAssistant: async (
+    name: string,
+    instructions: string,
+    model: string,
+    vectorStoreId: string
+  ) => {
+    const assistant = await openai.beta.assistants.create({
+      instructions: instructions,
+      name: name,
+      tools: [{ type: "file_search" }],
+      tool_resources: {
+        file_search: {
+          vector_store_ids: [vectorStoreId],
+        },
+      },
+      model: model,
+    });
+
+    if (!assistant) {
+      throw new Error("Failed to create assistant");
+    }
+
+    return assistant;
   },
 
   getAssistantByName: async (name: string) => {
-    // Get assistant
-    // Named after country code
-    // Return assistant object
+    const assistants = await openai.beta.assistants.list();
+
+    const assistant = assistants.data.find(
+      (assistant) => assistant.name === name
+    );
+
+    if (!assistant) {
+      throw new Error(`Assistant not found: ${name}`);
+    }
+
+    return assistant;
   },
 
   getAssistantById: async (id: string) => {
-    // Get assistant
-    // Return assistant object
+    const assistant = await openai.beta.assistants.retrieve(id);
+
+    if (!assistant) {
+      throw new Error(`Assistant not found: ${id}`);
+    }
+
+    return assistant;
   },
 
   getAssistantCompletion: async (assistantId: string, prompt: string) => {
-    // Get completion from assistant
-    // Return completion object
+    const run = await OpenAIService.createThreadAndRun(assistantId, prompt);
+    const lastMessage = await OpenAIService.getLastThreadMessage(run.thread_id);
+
+    return lastMessage;
+  },
+
+  createThreadAndRun: async (assistantId: string, prompt: string) => {
+    const run = await openai.beta.threads.createAndRun({
+      assistant_id: assistantId,
+      thread: {
+        messages: [{ role: "user", content: prompt }],
+      },
+    });
+
+    if (!run) {
+      throw new Error("Failed to create thread and run");
+    }
+
+    let runStatus;
+    const runId = run.id;
+    const threadId = run.thread_id;
+
+    do {
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      runStatus = await openai.beta.threads.runs.retrieve(threadId, runId);
+    } while (runStatus.status !== "completed" && runStatus.status !== "failed");
+
+    if (runStatus.status === "failed") {
+      throw new Error("Thread run failed");
+    }
+
+    return run;
+  },
+
+  getLastThreadMessage: async (threadId: string) => {
+    const messages = await openai.beta.threads.messages.list(threadId);
+
+    if (!messages) {
+      throw new Error("Failed to get thread messages");
+    }
+
+    const lastMessage = messages.data[messages.data.length - 1];
+
+    if (!lastMessage) {
+      throw new Error("Failed to get last thread message");
+    }
+
+    return lastMessage;
+  },
+
+  getCompletion: async (
+    systemPrompt: string,
+    userPrompt: string,
+    model: string
+  ) => {
+    const completion = await openai.chat.completions.create({
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: userPrompt },
+      ],
+      model: model,
+    });
+
+    return completion;
   },
 };
 
