@@ -150,6 +150,8 @@ textarea {
 
   margin: 10px;
 
+  margin-bottom: 25px;
+
   display: block;
 
   animation: spin 1s linear infinite;

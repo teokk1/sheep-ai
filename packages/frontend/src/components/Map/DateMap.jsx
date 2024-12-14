@@ -135,9 +135,12 @@ export function DateMap() {
               ) : (
                 <div className="spinner" />
               )}
-              <button className="button" onClick={() => {}}>
+              <a
+                className="button"
+                href={`/country/${selectedCountry?.countryCode}`}
+              >
                 Details
-              </button>
+              </a>
             </>
           )}
         </div>
