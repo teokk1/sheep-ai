@@ -1,0 +1,8 @@
+.tabber-tabs{
+    display: flex;
+
+    gap: var(--padding-400);
+}
+
+.tabber-tab{
+}

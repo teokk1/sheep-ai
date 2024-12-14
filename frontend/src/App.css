@@ -1,0 +1,96 @@
+@import url("https://fonts.googleapis.com/css2?family=Satoshi&display=swap");
+
+:root {
+  --font-family: "Satoshi", sans-serif;
+  --font-size-100: 10px;
+  --font-size-200: 14px;
+  --font-size-300: 16px;
+  --font-size-400: 18px;
+  --font-size-500: 20px;
+  --font-size-600: 26px;
+  --font-size-700: 32px;
+  --font-size-800: 40px;
+  --font-size-900: 60px;
+
+  --background-color: #FFFFFF;
+  --main-text-color: rgb(0, 0, 0);
+  --secondary-text-color: #6B7280;
+  --primary-highlight-color: #3c8354;
+  --secondary-highlight-color: #81aff9;
+
+  --light-color: rgb(255, 255, 255);
+  --dark-color: #111827;
+
+  --mid-color: #E5E7EB;
+
+  --glass-color: rgba(255, 255, 255, 0.1);
+
+  --border-radius-100: 8px;
+  --border-radius-200: 12px;
+  --border-radius-300: 16px;
+  --border-radius-400: 20px;
+
+  --default-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  --raised-shadow: 0px 0px 16px rgba(0, 0, 0, 0.2);
+
+  --padding-100: 2px;
+  --padding-200: 4px;
+  --padding-300: 8px;
+  --padding-350: 8px;
+  --padding-400: 12px;
+  --padding-500: 16px;
+  --padding-550: 20px;
+  --padding-600: 24px;
+  --padding-700: 32px;
+  --padding-800: 48px;
+  --padding-900: 64px;
+
+
+  --default-border: 1px solid var(--CoreUI-Neutrals-200, #e5e7eb);
+}
+
+body {
+  background-color: var(--background-color);
+  color: var(--main-text-color);
+  font-family: var(--font-family);
+}
+
+.root {
+  width: 100%;
+}
+
+.App {
+  width: 100%;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+a {
+  text-decoration: none;
+  color: var(--main-text-color);
+}
+
+.page h1 {
+  font-size: var(--font-size-800);
+  text-align: center;
+}
+
+button, .button {
+  padding: var(--padding-500) var(--padding-600);
+  border-radius: 100px;
+  background-color: var(--primary-highlight-color);
+  color: var(--light-color);
+  font-size: var(--font-size-200);
+  cursor: pointer;
+  border: none;
+}
+
+.secondary-button {
+  color: var(--secondary-text-color);
+  background-color: transparent;
+  border: none;
+}
