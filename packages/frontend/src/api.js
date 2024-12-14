@@ -8,10 +8,22 @@ function mockResponse(country, year) {
 
 export async function getTaxMarkdown(country, year) {
   return mockResponse(country, year)?.markdown;
+}
 
-  return fetch(
-    `https://raw.githubusercontent.com/shesek/tax-rates-data/main/data/${countryToCode(
-      country
-    )}/${year}.md`
-  );
+// http://localhost:8080/countries
+// body should look like this: {
+//   "country_code": "DE"
+// }
+// Post
+
+export async function getCountryInfo(countryCode) {
+  return fetch("http://localhost:8080/countries", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      country_code: countryCode
+    })
+  });
 }

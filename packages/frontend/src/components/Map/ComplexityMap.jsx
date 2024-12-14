@@ -242,9 +242,12 @@ export function ComplexityMap() {
                 )?.value || 0}
               </p>
 
-              <button className="button" onClick={() => {}}>
+              <a
+                className="button"
+                href={`/country/${selectedCountry?.countryCode}`}
+              >
                 Details
-              </button>
+              </a>
             </>
           )}
         </div>
