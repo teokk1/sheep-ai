@@ -1,0 +1,26 @@
+{
+  "name": "sheep-ai",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Sheep AI Monorepo",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "pnpm --parallel run dev",
+    "build": "pnpm --parallel run build"
+  },
+  "pnpm": {
+    "packageExtensions": {},
+    "peerDependencyRules": {
+      "allowedVersions": {},
+      "ignoreMissing": []
+    }
+  },
+  "workspaces": [
+    "packages/*"
+  ],
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "tsc": "^2.0.4",
+    "typescript": "^5.7.2"
+  }
+}
