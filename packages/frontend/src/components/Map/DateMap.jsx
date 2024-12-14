@@ -5,7 +5,7 @@ import { useState } from "react";
 import WorldMap from "react-svg-worldmap";
 import "./map.css";
 
-const lookup = require("country-code-lookup");
+import lookup from "country-code-lookup";
 
 export const upcomingTaxChangeDates = [
   { country: "de", date: Date.parse("2025-01-01") },
