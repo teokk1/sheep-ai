@@ -30,8 +30,9 @@ export type CreateAssistantResponseType = z.infer<
 
 export default async function (fastify: FastifyInstance) {
   fastify.post("/assistants/create", async (req, rep) => {
-    const body = CreateAssistantRequestSchema.parse(req.body);
-    const countryCode = body.country_code;
+    const countryCode = CreateAssistantRequestSchema.parse(
+      req.body
+    ).country_code;
 
     const result = await RetrievalService.createAssistantForCountry(
       countryCode

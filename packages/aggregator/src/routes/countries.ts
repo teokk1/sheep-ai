@@ -17,8 +17,7 @@ export type ResponseType = z.infer<typeof ResponseSchema>;
 
 export default async function (fastify: FastifyInstance) {
   fastify.post("/countries", async (req, rep) => {
-    const body = RequestSchema.parse(req.body);
-    const countryCode = body.country_code;
+    const countryCode = RequestSchema.parse(req.body).country_code;
 
     const result = await AggregationService.aggregate(countryCode);
 

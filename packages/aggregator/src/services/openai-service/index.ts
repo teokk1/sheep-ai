@@ -186,7 +186,8 @@ export const OpenAIService = {
   getCompletion: async (
     systemPrompt: string,
     userPrompt: string,
-    model: string
+    model: string,
+    temperature: number = 0.2
   ) => {
     const completion = await openai.chat.completions.create({
       messages: [
@@ -194,6 +195,7 @@ export const OpenAIService = {
         { role: "user", content: userPrompt },
       ],
       model: model,
+      temperature: temperature,
     });
 
     return completion;
