@@ -168,4 +168,5 @@ cython_debug/
 #.idea/
 
 page_content.html
-links.csv
+links*
+data
