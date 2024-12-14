@@ -1,2 +1,3 @@
 beautifulsoup4==4.12.3
 selenium==4.27.1
+openai==1.57.4

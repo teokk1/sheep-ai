@@ -3,12 +3,12 @@ from src.scraping_urls.scrape_urls import scrape_urls
 import os
 import json
 
-# base_url = "https://www.gov.uk/"
-base_url = "https://vlada.gov.hr/"
+base_url = "https://www.gov.uk/"
+# base_url = "https://vlada.gov.hr/"
 
 data_dir = f"data/{base_url.replace('https://', '').replace('.', '_')}"
 os.makedirs(data_dir, exist_ok=True)
-url_text_pairs = scrape_urls(base_url, max_urls=10000)
+url_text_pairs = scrape_urls(base_url, max_urls=20000)
 
 keywords = [
     "tax",
@@ -32,12 +32,12 @@ if not filtered_url_text_pairs or len(filtered_url_text_pairs) == 0:
     print("No urls found")
     exit()
 
-for url, text in filtered_url_text_pairs:
+for index, (url, text) in enumerate(filtered_url_text_pairs):
     if base_url not in url:
         print(f"Skipping {url} because it's not a subpage of {base_url}")
         continue
 
-    print(f"Scraping {url}")
+    print(f"Scraping {url}; {index} / {len(filtered_url_text_pairs)}")
     full_text = scrape_details(url)
 
     # Replace "/" in the URL to prevent subfolder creation
