@@ -5,6 +5,8 @@ import { useState } from "react";
 import WorldMap from "react-svg-worldmap";
 import "./map.css";
 
+const lookup = require("country-code-lookup");
+
 export const upcomingTaxChangeDates = [
   { country: "de", date: Date.parse("2025-01-01") },
   { country: "gb", date: Date.parse("2026-06-01") },
@@ -15,7 +17,7 @@ export const upcomingTaxChangeDates = [
 const minValue = new Date();
 const maxValue = Math.max(...Object.values(upcomingTaxChangeDates));
 
-const justColor = "#833c54";
+const justColor = "#F43F5E";
 
 function hexToRGB(hex) {
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
@@ -39,8 +41,8 @@ function distanceToToday(date) {
 
   const days = Math.floor(distance / (1000 * 60 * 60 * 24));
 
-  const maxDays = 365 * 4;
-  return (days / maxDays) * 100;
+  const maxDays = 365 * 2;
+  return 100 - (days / maxDays) * 100;
 }
 
 export function DateMap() {
@@ -58,7 +60,7 @@ export function DateMap() {
             color={justColor}
             title="Upcoming tax urgency index"
             backgroundColor="transparent"
-            value-suffix="people"
+            valuePrefix="🚨"
             size="xl"
             data={upcomingTaxChangeDates.map((d) => ({
               country: d.country,
@@ -103,19 +105,43 @@ export function DateMap() {
         </div>
       </div>
 
-      <div
-        className="world-map-legend"
-        style={{
-          background: `linear-gradient(to right, ${makeTransparent(
-            justColor,
-            minValue / maxValue
-          )}, ${justColor})`
-        }}
-      >
-        <div className="legend-labels">
-          <span className="legend-label">{0}</span>
-          <span className="legend-label">{100}</span>
-        </div>
+      <div className="table-wrapper">
+        <table className="table">
+          <thead>
+            <tr>
+              <th>Country</th>
+              <th>Expected Date of proposed changes</th>
+              <th>Expected changes</th>
+            </tr>
+          </thead>
+          <tbody>
+            {upcomingTaxChangeDates.map((d) => (
+              <tr>
+                <td>{d.country}</td>
+                <td>
+                  {new Date(d.date).toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric"
+                  })}
+                </td>
+                <td>
+                  <ul>
+                    <li>Reducing the tax burden on the self-employed</li>
+                    <li>Reducing the tax burden on small businesses</li>
+                    <li>
+                      Reducing the tax burden on businesses with employees
+                    </li>
+                    <li>
+                      Increasing the tax burden on businesses with fewer than 10
+                      employees
+                    </li>
+                  </ul>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </>
   );
